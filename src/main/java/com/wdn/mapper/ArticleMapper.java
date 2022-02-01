@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "cdi")
 public interface ArticleMapper {
+
     ArticleEntity toEntity(Article domain);
 
     Article toDomain(ArticleEntity entity);
