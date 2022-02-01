@@ -1,10 +1,13 @@
 package com.wdn.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity(name = "Article")
-@Table(name = "article")
+@Table(name = "articles")
+@Data
 public class ArticleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
