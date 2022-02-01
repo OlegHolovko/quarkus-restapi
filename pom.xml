@@ -6,8 +6,11 @@
   <artifactId>quarkus-restapi</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <properties>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.home>home</maven.home>
+    <compiler-plugin.version>3.9.0</compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -15,6 +18,7 @@
     <quarkus.platform.version>2.6.3.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <mapstruct.version>1.4.2.Final</mapstruct.version>
+    <lombok.version>1.18.20</lombok.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -67,9 +71,42 @@
       <artifactId>mapstruct</artifactId>
       <version>${mapstruct.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jsonb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>8.4.1</version>
+        <configuration>
+          <baselineOnMigrate>true</baselineOnMigrate>
+          <url>jdbc:postgresql://localhost:5432/quarkusrest</url>
+          <user>postgres</user>
+          <password>12345678</password>
+          <schemas>
+            <schema>public</schema>
+          </schemas>
+          <locations>filesystem:src\main\resources\db\migration\</locations>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
@@ -86,29 +123,17 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
+        <version>3.8.0</version>
         <configuration>
-          <compilerArgs>
-            <arg>-parameters</arg>
-          </compilerArgs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
-        <configuration>
-          <systemPropertyVariables>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-            <maven.home>${maven.home}</maven.home>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
-        <configuration>
+          <parameters>${maven.compiler.parameters}</parameters>
           <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
@@ -116,6 +141,19 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.0.0-M5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -140,8 +178,11 @@
                 </goals>
                 <configuration>
                   <systemPropertyVariables>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    <native.image.path>
+                      ${project.build.directory}/${project.build.finalName}-runner
+                    </native.image.path>
+                    <java.util.logging.manager>org.jboss.logmanager.LogManager
+                    </java.util.logging.manager>
                     <maven.home>${maven.home}</maven.home>
                   </systemPropertyVariables>
                 </configuration>
