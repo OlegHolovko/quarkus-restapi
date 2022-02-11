@@ -1,5 +1,6 @@
 package com.wdn.resource;
 
+import com.wdn.exception.EmptyResultDataAcceptException;
 import com.wdn.service.ArticleService;
 
 import javax.ws.rs.*;
@@ -34,7 +35,7 @@ public class ArticleResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/articles/{articleId}")
-    public Response get(@PathParam("articleId") Integer articleId) {
+    public Response get(@PathParam("articleId") Integer articleId) throws EmptyResultDataAcceptException {
 
         return Response.ok(articleService.get(articleId)).build();
     }

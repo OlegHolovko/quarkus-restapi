@@ -1,5 +1,6 @@
 package com.wdn.service;
 
+import com.wdn.exception.EmptyResultDataAcceptException;
 import com.wdn.mapper.ArticleMapper;
 import com.wdn.domain.Article;
 import com.wdn.model.ArticleEntity;
@@ -27,7 +28,7 @@ public class ArticleService {
                 .collect(Collectors.toList());
     }
 
-    public ArticleEntity get(Integer articleId){
-        return articleRepository.findById(articleId);
+    public ArticleEntity get(Integer articleId) throws EmptyResultDataAcceptException {
+        return articleRepository.findByIdOptional(articleId).orElseThrow(EmptyResultDataAcceptException::new);
     }
 }
