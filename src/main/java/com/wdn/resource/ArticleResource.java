@@ -2,10 +2,7 @@ package com.wdn.resource;
 
 import com.wdn.service.ArticleService;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -29,8 +26,16 @@ public class ArticleResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/article")
+    @Path("/articles")
     public Response getAll() {
-        return Response.ok(articleService.findAll()).build();
+        return Response.ok(articleService.getAll()).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/articles/{articleId}")
+    public Response get(@PathParam("articleId") Integer articleId) {
+
+        return Response.ok(articleService.get(articleId)).build();
     }
 }

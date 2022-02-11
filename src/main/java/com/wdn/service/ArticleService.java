@@ -2,6 +2,7 @@ package com.wdn.service;
 
 import com.wdn.mapper.ArticleMapper;
 import com.wdn.domain.Article;
+import com.wdn.model.ArticleEntity;
 import com.wdn.repository.ArticleRepository;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
@@ -19,10 +20,14 @@ public class ArticleService {
         this.articleMapper = articleMapper;
     }
 
-    public List<Article> findAll(){
+    public List<Article> getAll(){
         return articleRepository.findAll()
                 .stream()
                 .map(articleMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    public ArticleEntity get(Integer articleId){
+        return articleRepository.findById(articleId);
     }
 }
